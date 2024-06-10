@@ -1,11 +1,17 @@
 import express from "express";
 
-const app = express()
 
-app.get('/',(req,res)=>{
-    res.json({"message":"Heyyyyyyy"});
-})
- 
 
+import errorHandler from "./middlewares/errorhandler";
+
+
+const app = express();
+
+app.get("/", (req, res,next) => {
+  res.json({ message: "Heyyyyyyy" });
+});
+
+
+app.use(errorHandler)
 
 export default app;
