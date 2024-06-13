@@ -5,8 +5,9 @@ confi();
 const _config ={
     port : process.env.PORT,
     databseUrl : process.env.MONGO_URI,
-    env:process.env.NODE_ENV
+    env:process.env.NODE_ENV,
+    jwtKey: process.env.JWT_KEY
 }
 
-//Obj freeze is used for not changing the port and will give only read access to the config 
+//Obj freeze is used for not changing and will give only read access to the config 
 export const config = Object.freeze(_config);
