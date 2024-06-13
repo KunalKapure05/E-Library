@@ -2,7 +2,7 @@ import { NextFunction,Request,Response } from "express";
 import User from '../Models/User';
 import createHttpError from "http-errors";
 
-const createUser = async function(req:Request,res:Response,next:NextFunction){
+ export const createUser = async function(req:Request,res:Response,next:NextFunction){
     const {name,email,password} = req.body;
    if(!name || !email || !password){
     const error =  createHttpError(400,"All fields are required")

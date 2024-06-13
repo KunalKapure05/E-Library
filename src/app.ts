@@ -1,14 +1,14 @@
 import express from "express";
 
 import errorHandler from "./middlewares/errorhandler";
-
+import userRoute from './Routes/userRoutes' 
 const app = express();
 
 app.use(express.json())
 
-app.get("/", (req, res,next) => {
-  res.json({ message: "Heyyyyyyy" });
-});
+app.use('/api/users',userRoute);
+
+
 
 
 app.use(errorHandler)
