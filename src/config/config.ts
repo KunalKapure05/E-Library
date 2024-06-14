@@ -4,7 +4,7 @@ confi();
 
 const _config ={
     port : process.env.PORT,
-    databseUrl : process.env.MONGO_URI,
+    databseUrl : process.env.MONGO_URL,
     env:process.env.NODE_ENV,
     jwtKey: process.env.JWT_KEY
 }

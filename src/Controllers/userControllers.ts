@@ -38,11 +38,46 @@ const register = async function (req: Request, res: Response, next: NextFunction
     
     catch (error) {
         console.error(error);
-        return next(createHttpError(500, 'Error saving the user'));
+        return next(createHttpError(500, 'Server Error'));
     }
+}
+
+const login = async function(req:Request,res:Response,next:NextFunction){
+try {
+    const {email,password} = req.body;
+if(!email || !password){
+    const error = createHttpError(400, "All fields are required");
+    return next(error);
+}
+const user = await User.findOne({email})
+if(!user){
+    console.error("User not found");
+    const error = createHttpError(404, "User not found");
+    return next(error);
+}
+const matchPassword = await bcrypt.compare(password,user.password)
+if(!matchPassword){
+    console.error("E-mail or Password incorrect");
+    
+    const error = createHttpError(400, "E-mail or Password incorrect");
+    return next(error);
+}
+
+const jwtToken = sign({ sub: user._id }, config.jwtKey as string, { expiresIn: "21d" });
+return res.status(201).json({ accessToken: jwtToken });
+} 
+
+catch (error) {
+    console.error(error);
+    return next(createHttpError(500, 'Server Error'));
+}
 }
 
 
 
 
-export { register };
+
+
+
+
+export { register , login};
