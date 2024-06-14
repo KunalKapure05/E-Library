@@ -73,6 +73,24 @@ catch (error) {
 }
 }
 
+const fetchUsers = async (req:Request , res:Response, next:NextFunction) => {
+
+   try {
+     const users  = await User.find()
+     const response = users.map((el)=>{
+        return {
+            name : el.name,
+            email : el.email
+
+        }
+     })
+     return res.status(200).json({Users:response});
+ }
+   
+   catch (error) {
+    return next(createHttpError(500,"Server Issue"))
+   }
+}
 
 
 
@@ -80,4 +98,4 @@ catch (error) {
 
 
 
-export { register , login};
+export { register , login,fetchUsers};
