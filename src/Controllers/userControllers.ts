@@ -13,8 +13,8 @@ async function hashingPassword(password: string) {
 
 const register = async function (req: Request, res: Response, next: NextFunction) {
     try {
-        const { name, email, password } = req.body;
-        if (!name || !email || !password) {
+        const { name, email, password,confirmPassword } = req.body;
+        if (!name || !email || !password || !confirmPassword) {
             const error = createHttpError(400, "All fields are required");
             return next(error);
         }
@@ -27,6 +27,9 @@ const register = async function (req: Request, res: Response, next: NextFunction
             return next(error);
         }
 
+        if(password!== confirmPassword){
+            return next(createHttpError(400,"password and confirm password do not match"))
+        }
         const hashedPassword = await hashingPassword(password);
         const newUser = new User({ name, email, password: hashedPassword });
         const response = await newUser.save();
@@ -34,7 +37,10 @@ const register = async function (req: Request, res: Response, next: NextFunction
 
         const jwtToken = sign({ sub: newUser._id }, config.jwtKey as string, { expiresIn: "21d" });
         return res.status(201).json({ accessToken: jwtToken, user: response });
-    } 
+  
+
+    }
+        
     
     catch (error) {
         console.error(error);
@@ -76,11 +82,12 @@ catch (error) {
 const fetchUsers = async (req:Request , res:Response, next:NextFunction) => {
 
    try {
-     const users  = await User.find()
+     const users  = await User.find().sort({_id:-1}) 
      const response = users.map((el)=>{
         return {
             name : el.name,
             email : el.email
+            
 
         }
      })
