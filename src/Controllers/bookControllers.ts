@@ -4,6 +4,7 @@ import path from "path";
 import createHttpError from "http-errors";
 import fs from "fs"
 import Book from "../Models/Book";
+import { AuthRequest } from "../Interfaces/AuthRequest";
 
 const createBook = async(req:Request,res:Response,next:NextFunction)=>{
 try {
@@ -40,12 +41,13 @@ try {
     })
     console.log("BookuploadResult:",bookFileUpload);
     
+    const _req  = req as unknown as AuthRequest
     const newBook = await Book.create({
         title,
         genre ,
         coverImage:uploadedResult.secure_url,
         file:bookFileUpload.secure_url,
-        author: "666b48a124f54e24ce403256"
+        author: _req.userId
        })
    
     console.log("uploadResult:",uploadedResult);

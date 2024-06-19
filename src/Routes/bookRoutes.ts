@@ -2,6 +2,7 @@ import path from 'path'
 import express from 'express';
 import {createBook} from '../Controllers/bookControllers'
 import multer from 'multer';
+import jwtAuth from '../middlewares/jwtAuth';
 const router = express.Router();
 
 const upload = multer({
@@ -11,7 +12,7 @@ const upload = multer({
 
 
 
-router.post('/',upload.fields([
+router.post('/',jwtAuth,upload.fields([
     {name:"coverImage",maxCount:1},
     {name:"file",maxCount:1}
 ]),createBook);
