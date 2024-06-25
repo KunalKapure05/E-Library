@@ -69,4 +69,92 @@ try {
 }
 }
 
-export {createBook}   
+
+const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { title, genre } = req.body;
+        const bookId = req.params.bookId;
+
+        const book = await Book.findById(bookId);
+        if (!book) return next(createHttpError(404, "Book not found"));
+
+        const _req = req as unknown as AuthRequest;
+        if (book.author.toString() !== _req.userId) {
+            return next(createHttpError(403, "Unauthorized to update book"));
+        }
+
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        // Check if Image field exists
+        let completeCoverImage = book.coverImage;
+        if (files.coverImage) {
+            const fileName = files.coverImage[0].filename;
+            const convertMimeType = files.coverImage[0].mimetype.split('/').at(-1);
+            const ImagefilePath = path.resolve(__dirname, '../../public/data/uploads', fileName);
+
+            const uploadedResult = await cloudinary.uploader.upload(ImagefilePath, {
+                filename_override: fileName,
+                folder: 'book-covers',
+                format: convertMimeType
+            });
+
+            completeCoverImage = uploadedResult.secure_url;
+            await fs.promises.unlink(ImagefilePath);
+        }
+
+        // Check if the file field exists
+        let completeFileName = book.file;
+        if (files.file) {
+            const bookFileName = files.file[0].filename;
+            const bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookFileName);
+
+            const uploadBookPdf = await cloudinary.uploader.upload(bookFilePath, {
+                resource_type: 'raw',
+                filename_override: bookFileName,
+                folder: 'book-pdfs',
+                format: 'pdf'
+            });
+
+            completeFileName = uploadBookPdf.secure_url;
+            try {
+                
+                
+                await fs.promises.unlink(bookFilePath);
+            } catch (error) {
+                return next(createHttpError(500,"Error in unlinking book files path"));
+            }
+        }
+
+        const updatedBook = await Book.findByIdAndUpdate(
+            bookId,
+            {
+                title,
+                genre,
+                coverImage: completeCoverImage,
+                file: completeFileName
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        return res.json(updatedBook);
+    } catch (error) {
+        console.error(error);
+        return next(createHttpError(500, 'Error while updating the files'));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+    export {createBook,updateBook};   
