@@ -82,27 +82,30 @@ catch (error) {
 const fetchUsers = async (req:Request , res:Response, next:NextFunction) => {
 
    try {
-     const users  = await User.find().sort({_id:-1}) 
-     const response = users.map((el)=>{
-        return {
-            name : el.name,
-            email : el.email
-            
+    const page = Number(req.query.page) || 1;  
+    const limit = Number(req.query.limit ) || 2;
+    const skip = (page - 1) * limit;
 
-        }
-     })
-     return res.status(200).json({Users:response});
+    
+const Users = await User.find().sort({_id:-1}).skip(skip).limit(limit);
+const totalUsers = await User.find();
+const TotalUsers = totalUsers.length;
+
+
+
+
+        return res.json({
+            Users,
+            TotalUsers,
+            totalPages: Math.ceil(TotalUsers / limit),
+            currentPage: page
+        });
+
  }
-   
    catch (error) {
     return next(createHttpError(500,"Server Issue"))
    }
 }
-
-
-
-
-
 
 
 export { register , login,fetchUsers};
