@@ -146,7 +146,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 
-//Added Pagination for list of books
+//Added Pagination for fetching list of books
 const getAllBooks = async (req: Request, res: Response,next: NextFunction)=>{
     try {
         const page = Number(req.query.page) || 1;  
