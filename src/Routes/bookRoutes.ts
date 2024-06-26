@@ -1,6 +1,6 @@
 import path from 'path'
 import express from 'express';
-import {createBook, updateBook} from '../Controllers/bookControllers'
+import {createBook, updateBook,getAllBooks} from '../Controllers/bookControllers'
 import multer from 'multer';
 import jwtAuth from '../middlewares/jwtAuth';
 const router = express.Router();
@@ -22,5 +22,7 @@ router.put('/update/:bookId',jwtAuth,upload.fields([
     {name:"file",maxCount:1},
    
 ]), updateBook)
+
+router.get('/getAllBooks',getAllBooks)
 
 export default router
