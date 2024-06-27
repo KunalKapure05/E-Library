@@ -57,13 +57,19 @@ try {
      await fs.promises.unlink(ImagefilePath)
      await fs.promises.unlink(bookFilePath)
    } catch (error) {
-    return next(createHttpError('500','Server Issue for deletion of temp files'))
+    return next(createHttpError('500','Server Issue encountered for deletion of temp files'))
    }
     
-    return res.status(201).json({id: newBook._id})
+   await newBook.populate('author','name');
+    return res.status(201).json({
+        _id:newBook.id,
+        author_id : newBook.author,
+       
+        
+    })
 } catch (error) {
     console.error(error);
-    return next(createHttpError(500,"Server Issue while uploading the files"))
+    return next(createHttpError(500,"Server Issue encountered while uploading the files"))
     
 }
 }
@@ -119,7 +125,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
                 
                 await fs.promises.unlink(bookFilePath);
             } catch (error) {
-                return next(createHttpError(500," Server Issue in unlinking book files path"));
+                return next(createHttpError(500," Server Issue encountered in unlinking book files path"));
             }
         }
 
@@ -140,7 +146,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
         return res.json(updatedBook);
     } catch (error) {
         console.error(error);
-        return next(createHttpError(500, ' Server Issue while updating the files'));
+        return next(createHttpError(500, ' Server Issue encountered while updating the files'));
     }
 }
 
@@ -170,9 +176,29 @@ const getAllBooks = async (req: Request, res: Response,next: NextFunction)=>{
     }
     
     catch (error) {
-        return next(createHttpError(500,"Server Issue to get list of books"));
+        return next(createHttpError(500,"Server Issue encountered to get list of books"));
     }
 }
+
+
+const getSingleBook = async(req: Request, res: Response,next: NextFunction)=>{
+    const bookId = req.params.bookId;
+   try {
+    const book = await Book.findById(bookId).populate("author", "name");;
+    if(!book){
+        return next(createHttpError(404, "Book not found"));
+    }
+
+    return res.json(book);
+}
+
+catch(error){
+    return next(createHttpError(500,"Server Issue encountered while getting the book"))
+}
+}
+
+
+
 
 
 
@@ -213,7 +239,7 @@ const DeleteBook = async(req: Request, res: Response,next: NextFunction)=>{
  
     return res.sendStatus(204).json({_id:bookId});
    } catch (error) {
-    return next(createHttpError(500,'Server Issue while deletion of book'));
+    return next(createHttpError(500,'Server Issue encountered while deletion of book'));
    }
     
 }
@@ -221,4 +247,4 @@ const DeleteBook = async(req: Request, res: Response,next: NextFunction)=>{
 
 
 
-    export {createBook,updateBook,getAllBooks,DeleteBook} ;   
+    export {createBook,updateBook,getAllBooks,getSingleBook,DeleteBook} ;   

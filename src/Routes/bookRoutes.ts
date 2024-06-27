@@ -1,6 +1,6 @@
 import path from 'path'
 import express from 'express';
-import {createBook, updateBook,getAllBooks,DeleteBook} from '../Controllers/bookControllers'
+import {createBook, updateBook,getAllBooks,getSingleBook,DeleteBook} from '../Controllers/bookControllers'
 import multer from 'multer';
 import jwtAuth from '../middlewares/jwtAuth';
 const router = express.Router();
@@ -24,6 +24,9 @@ router.put('/update/:bookId',jwtAuth,upload.fields([
 ]), updateBook)
 
 router.get('/getAllBooks',getAllBooks)
+router.get('/:bookId',getSingleBook)
+
+
 router.delete('/delete/:bookId',jwtAuth,DeleteBook)
 
 export default router
