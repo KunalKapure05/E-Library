@@ -53,13 +53,12 @@ try {
     console.log("uploadResult:",uploadedResult);
     
     //This will delete temp files which are there in Public/data/uploads folder
-    try {
-        await fs.promises.unlink(ImagefilePath)
-        await fs.promises.unlink(bookFilePath)
-        
-    } catch (error) {
-        return next(createHttpError(500,"Server Issue in deleting temp files"))
-    }
+   try {
+     await fs.promises.unlink(ImagefilePath)
+     await fs.promises.unlink(bookFilePath)
+   } catch (error) {
+    return next(createHttpError('500','Server Issue for deletion of temp files'))
+   }
     
     return res.status(201).json({id: newBook._id})
 } catch (error) {
@@ -146,14 +145,15 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 
-//Added Pagination for fetching list of books
+
 const getAllBooks = async (req: Request, res: Response,next: NextFunction)=>{
     try {
+          //Added Pagination for fetching list of books  
         const page = Number(req.query.page) || 1;  
         const limit = Number(req.query.limit ) || 2;
         const skip = (page - 1) * limit;
     
-        
+    
     const books = await Book.find().sort({_id:-1}).skip(skip).limit(limit);
     const totalBooks = await Book.find();
     const TotalBooks = totalBooks.length;
@@ -172,8 +172,53 @@ const getAllBooks = async (req: Request, res: Response,next: NextFunction)=>{
     catch (error) {
         return next(createHttpError(500,"Server Issue to get list of books"));
     }
-
-
 }
 
-    export {createBook,updateBook,getAllBooks} ;   
+
+
+const DeleteBook = async(req: Request, res: Response,next: NextFunction)=>{
+    const bookId = req.params.bookId;
+   try {
+     const book = await Book.findById(bookId);
+     if(!book){
+         return next(createHttpError(404,"Book Not Found"))
+     }
+ 
+     //Check for Access
+     const _req = req as unknown as AuthRequest;
+     if(book.author.toString() !== _req.userId){
+         return next(createHttpError(403,"You dont have access to delete the book of others."))
+ 
+     }
+ 
+
+     const coverFileSplits = book.coverImage.split('/');
+     console.log(coverFileSplits);
+     const coverImagePublicId = coverFileSplits.at(-2) + "/" + coverFileSplits.at(-1)?.split('.').at(-2);
+     console.log("coverImagePublicId: ",coverImagePublicId);
+     
+ 
+ 
+     const bookFileSplits = book.file.split('/');
+     console.log(bookFileSplits);
+     const bookFilePublicId = bookFileSplits.at(-2) + "/" + bookFileSplits.at(-1);
+     console.log("bookFilePublicId: ",bookFilePublicId);
+     
+     await cloudinary.uploader.destroy(coverImagePublicId);
+     await cloudinary.uploader.destroy(bookFilePublicId,{
+         resource_type:"raw"
+     });
+ 
+     await Book.deleteOne({_id:bookId});
+ 
+    return res.sendStatus(204).json({_id:bookId});
+   } catch (error) {
+    return next(createHttpError(500,'Server Issue while deletion of book'));
+   }
+    
+}
+
+
+
+
+    export {createBook,updateBook,getAllBooks,DeleteBook} ;   
