@@ -123,4 +123,4 @@ const TotalUsers = totalUsers.length;
 }
 
 
-export { register , login,fetchUsers};
+export { register , login,logout,fetchUsers};
