@@ -70,13 +70,28 @@ if(!matchPassword){
 }
 
 const jwtToken = sign({ sub: user._id }, config.jwtKey as string, { expiresIn: "21d" });
+
+res.cookie("token",jwtToken,{
+    httpOnly:true,
+    sameSite:"lax",
+    path:'/',
+    expires: new Date( Date.now() + 1000*60*60*24)
+})
 return res.status(201).json({ accessToken: jwtToken });
+
+
+
 } 
 
 catch (error) {
     console.error(error);
     return next(createHttpError(500, 'Server Error'));
 }
+}
+
+const logout = async (req:Request, res:Response, next:NextFunction) => {
+    res.clearCookie("token",{path:'/'});
+    return res.json({message: "Logged Out"})
 }
 
 const fetchUsers = async (req:Request , res:Response, next:NextFunction) => {
