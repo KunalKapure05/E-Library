@@ -20,7 +20,7 @@ try {
 
 
 
-    await mongoose.connect(config.databseUrl as string); 
+    await mongoose.connect(config.databaseUrl as string); 
 
    
 
