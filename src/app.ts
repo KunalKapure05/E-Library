@@ -32,9 +32,9 @@ app.use(expressSession({
     cookie: { secure: false }
  }));
  
- app.get('/', (req, res) => {
-  res.send("welcome to the E-libary System")
- })
+//  app.get('/', (req, res) => {
+//   res.send("welcome to the E-libary System")
+//  })
 
 app.use(passport.initialize());
 app.use(passport.session());

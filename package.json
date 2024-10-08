@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.ts",
+    "dev": "nodemon src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc"
+    "build": "tsc",
+    "postbuild": "xcopy /E /I src\\views dist\\views"
+
   },
   "author": "",
   "license": "ISC",

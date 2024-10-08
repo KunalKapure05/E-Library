@@ -24,6 +24,9 @@ app.use((0, express_session_1.default)({
     saveUninitialized: true,
     cookie: { secure: false }
 }));
+//  app.get('/', (req, res) => {
+//   res.send("welcome to the E-libary System")
+//  })
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.get("/", (req, res) => {
