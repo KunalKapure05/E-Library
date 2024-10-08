@@ -6,7 +6,7 @@
     "dev": "nodemon src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
-    "postbuild": "xcopy /E /I src\\views dist\\views"
+    "postbuild": "copyfiles -u 1 src/views/**/* dist"
 
   },
   "author": "",
