@@ -1,7 +1,7 @@
 
-import app from "./src/app"
-import {config} from "./src/config/config";
-import connectDb from './src/config/db';
+import app from "./app"
+import {config} from "./config/config";
+import connectDb from './config/db';
 
 const startServer= async ()=>{
 
